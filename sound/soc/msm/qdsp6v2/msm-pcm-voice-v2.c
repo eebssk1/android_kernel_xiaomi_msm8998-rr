@@ -31,6 +31,8 @@
 #include "msm-qti-pp-config.h"
 #include "q6voice.h"
 
+#include <bool2int.h>
+
 struct msm_dtmf_detected_event_data {
 	uint32_t event_type;
 	uint32_t payload_len;
@@ -496,7 +498,7 @@ static int msm_voice_sidetone_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
 	int ret;
-	bool sidetone_enable = ucontrol->value.integer.value[0];
+	bool sidetone_enable = bool2int(ucontrol->value.integer.value[0]);
 	uint32_t session_id = ALL_SESSION_VSID;
 
 	if (sidetone_enable < 0) {
