@@ -1,0 +1,116 @@
+# C/C++ with GCC
+# Build your C/C++ project with GCC using make.
+# Add steps that publish test results, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/c-cpp/gcc
+
+trigger:
+ branches:
+   include:
+     refs/tags/bd_ci_*
+
+pool:
+  vmImage: 'ubuntu-18.04'
+
+jobs:
+- job: main
+  timeoutInMinutes: 150
+  steps: 
+  - task: CmdLine@2
+    inputs:
+      script: |
+        sudo apt update
+    displayName: "Update"
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        function ck () {
+          if [ $? -ne 0 ]; then
+            exit $?
+          fi
+        }
+        sudo apt-get install libc6
+        ck
+        sudo apt-get install libssl-dev
+        ck
+        sudo apt-get install bc
+        ck
+        sudo apt-get install aria2
+        ck
+        sudo apt-get install pwgen
+        ck
+    displayName: "Install deps"
+    condition: succeeded()
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        function ck () {
+          if [ $? -ne 0 ]; then
+            exit $?
+          fi
+        }
+        aria2c --show-console-readout false -x4 -s4 https://github.com/eebssk1/android_gcc_prebuilt/releases/download/v1/LinaroGCC_8.3-Android_aarch64_api29-Linux_amd64.tar.xz
+        ck
+        aria2c --show-console-readout false -x4 -s4 "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf.tar.xz?revision=e09a1c45-0ed3-4a8e-b06b-db3978fd8d56&la=en"
+        ck
+        echo Unpack...
+        tar -xf LinaroGCC_8.3-Android_aarch64_api29-Linux_amd64.tar.xz
+        tar -xf gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf.tar.xz
+        mkdir build
+        mkdir build/arts
+        pwgen -s 8 1 > build/rstr.txt
+        cat build/rstr.txt
+    displayName: "Prepare"
+    condition: succeeded()
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        function ck () {
+          if [ $? -ne 0 ];then
+            exit $?
+          fi
+        }
+        export LOCALVERSION=-$(cat build/rstr.txt)
+        export PATH=$PWD/mcon/bin:$PWD/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf/bin:$PATH
+        sudo cp -n $PWD/mcon/deps/lib/lib* /usr/lib/x86_64-linux-gnu/
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-android-
+        export CROSS_COMPILE_ARM32=arm-linux-gnueabihf-
+        date >> build/other_info.txt
+        cat build/rstr.txt >> build/other_info.txt
+        git rev-parse HEAD >> build/other_info.txt
+        make sagit_eh_defconfig O=build
+        ck
+        make -j4 O=build 2>&1 | tee build/out.log
+        exit ${PIPESTATUS[0]}
+    displayName: "Build"
+    condition: succeeded()
+  - task: Bash@3
+    inputs:
+      targetType : 'inline'
+      script: |
+        function ck () {
+          if [ $? -ne 0 ]; then
+            exit $?
+          fi
+        }
+        cp build/out.log build/arts/
+        ck
+        gzip -8 build/arts/out.log
+        ck
+        cp build/other_info.txt build/arts/
+        ck
+        cp build/arch/arm64/boot/Image.gz build/arts/
+        ck
+        cp build/arch/arm64/boot/Image.gz-dtb build/arts/
+    displayName: "Collect Files"
+    condition: succeeded()
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: 'build/arts'
+      ArtifactName: 'result'
+      publishLocation: 'Container'
+    displayName: "Publish"
+    condition: succeeded()
