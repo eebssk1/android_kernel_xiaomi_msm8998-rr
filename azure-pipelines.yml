@@ -4,9 +4,9 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/c-cpp/gcc
 
 trigger:
- branches:
+ tags:
    include:
-     refs/tags/bd_ci_*
+   - bd_ci_*
 
 pool:
   vmImage: 'ubuntu-18.04'
