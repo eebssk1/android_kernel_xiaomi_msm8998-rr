@@ -31,7 +31,6 @@
 #include "msm-qti-pp-config.h"
 #include "q6voice.h"
 
-#include <bool2int.h>
 
 struct msm_dtmf_detected_event_data {
 	uint32_t event_type;
