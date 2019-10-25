@@ -498,10 +498,10 @@ static int msm_voice_sidetone_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
 	int ret;
-	bool sidetone_enable = bool2int(ucontrol->value.integer.value[0]);
+	bool  sidetone_enable = ucontrol->value.integer.value[0];
 	uint32_t session_id = ALL_SESSION_VSID;
 
-	if (sidetone_enable < 0) {
+	if (sidetone_enable != true) {
 		pr_err("%s: Invalid arguments sidetone enable %d\n",
 			 __func__, sidetone_enable);
 		ret = -EINVAL;
