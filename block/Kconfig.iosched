@@ -69,6 +69,12 @@ config BFQ_GROUP_IOSCHED
 	Enable hierarchical scheduling in BFQ, using the blkio
 	(cgroups-v1) or io (cgroups-v2) controller.
 
+config IOSCHED_SIO
+	tristate "simple i/o I/O scheduler"
+	default n
+	---help---
+	  Simple I/O scheduler for flash-like drives.
+
 choice
 	prompt "Default I/O scheduler"
 	default DEFAULT_CFQ
