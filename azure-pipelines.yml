@@ -9,7 +9,7 @@ trigger:
    - bd_ci_*
 
 pool:
-  vmImage: 'ubuntu-18.04'
+  vmImage: 'ubuntu-latest'
 
 jobs:
 - job: main
@@ -18,7 +18,7 @@ jobs:
   - task: CmdLine@2
     inputs:
       script: |
-        sudo apt update
+        sudo apt-get update
     displayName: "Update"
   - task: Bash@3
     inputs:
@@ -29,15 +29,15 @@ jobs:
             exit $?
           fi
         }
-        sudo apt-get install libc6
+        sudo apt-get -y install libc6
         ck
-        sudo apt-get install libssl-dev
+        sudo apt-get -y install libssl-dev
         ck
-        sudo apt-get install bc
+        sudo apt-get -y install bc
         ck
-        sudo apt-get install aria2
+        sudo apt-get -y install aria2
         ck
-        sudo apt-get install pwgen
+        sudo apt-get -y install pwgen
         ck
     displayName: "Install deps"
     condition: succeeded()
@@ -84,8 +84,8 @@ jobs:
         make sagit_eh_defconfig O=build
         ck
         export LDFLAGS="-O2 -flto -z combreloc"
-        export KCFLAGS="-flto -ffat-lto-objects -mcpu=cortex-a73.cortex-a53+crc+fp+simd+aes+sha2 -fira-region=all -fira-hoist-pressure -fsched-pressure -fsched-spec-load -fipa-pta -fgraphite-identity -fgraphite -fivopts -fpredictive-commoning -fbranch-target-load-optimize2 -fstdarg-opt -Wl,-O2 -momit-leaf-frame-pointer -mstrict-align -pipe -fgcse-after-reload -fdevirtualize-at-ltrans -fno-conserve-stack"
-        make -j4 O=build 2>&1 | tee build/out.log
+        export KCFLAGS="-flto -ffat-lto-objects -mcpu=cortex-a73.cortex-a53+crc+fp+simd+aes+sha2 -fira-hoist-pressure -fsched-pressure -fsched-spec-load -fipa-pta -fgraphite-identity -fgraphite -fivopts -fpredictive-commoning -fbranch-target-load-optimize2 -fstdarg-opt -Wl,-O2 -momit-leaf-frame-pointer -mstrict-align -pipe -fgcse-after-reload -fdevirtualize-at-ltrans"
+        make -j8 O=build 2>&1 | tee build/out.log
         exit ${PIPESTATUS[0]}
     displayName: "Build"
     condition: succeeded()
