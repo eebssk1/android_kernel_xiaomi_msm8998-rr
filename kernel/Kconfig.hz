@@ -39,8 +39,8 @@ choice
 	 on SMP and NUMA systems and exactly dividing by both PAL and
 	 NTSC frame rates for video and multimedia work.
 
-	config HZ_450
-		bool "450 HZ"
+	config HZ_400
+		bool "400 HZ"
 	help
 	 this would be nice.
 
@@ -57,7 +57,7 @@ config HZ
 	default 100 if HZ_100
 	default 250 if HZ_250
 	default 300 if HZ_300
-	default 450 if HZ_450
+	default 400 if HZ_450
 	default 1000 if HZ_1000
 
 config SCHED_HRTICK
