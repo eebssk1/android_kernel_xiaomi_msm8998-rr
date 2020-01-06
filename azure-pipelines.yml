@@ -121,3 +121,18 @@ jobs:
       publishLocation: 'Container'
     displayName: "Publish"
     condition: succeeded()
+  - task: cURLUploader@2
+    inputs:
+      files: 'build/arts/*'
+      authType: 'UserAndPass'
+      username: 'eebssk1'
+      password: '$(apikey)'
+      url: 'https://api.bintray.com/content/eebssk1/rr_kernel/kernels/'
+      remotePath: '$(Build.BuildId)/arts/'
+    displayName: "BintrayUpload"
+    condition: succeeded()
+  - task: CmdLine@2
+    inputs:
+      script: 'curl -X POST -ueebssk1:$(apikey) https://api.bintray.com/content/eebssk1/rr_kernel/kernels/$(Build.BuildId)/publish'
+    displayName: "BintrayPublish"
+    condition: succeeded()
