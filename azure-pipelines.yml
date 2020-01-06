@@ -88,8 +88,8 @@ jobs:
         git rev-parse HEAD >> build/other_info.txt
         make sagit_eh_defconfig O=build
         ck
-        export LDFLAGS="-O3 -flto -z combreloc"
-        export KCFLAGS="-flto -ffat-lto-objects -mcpu=cortex-a73.cortex-a53+crc+fp+simd+aes+sha2 -ftree-slp-vectorize -ftree-lrs -fsched-spec-load -fsched-stalled-insns=2 -fpredictive-commoning -fpeel-loops -floop-nest-optimize -flive-range-shrinkage -fipa-pta -fgraphite-identity -fgraphite -fbranch-target-load-optimize2 -fbtr-bb-exclusive -falign-functions -falign-jumps -falign-loops -fno-web"
+        export LDFLAGS="-O2 -flto -z combreloc"
+        export KCFLAGS="-flto -ffat-lto-objects -mcpu=cortex-a73.cortex-a53+crc+fp+simd+aes+sha2 -ftree-slp-vectorize -ftree-lrs -fsched-spec-load -fsched-stalled-insns=2 -fpredictive-commoning -fpeel-loops  -fipa-pta -fgraphite-identity -fgraphite -fbranch-target-load-optimize2 -fbtr-bb-exclusive -falign-functions -falign-jumps -falign-loops -fno-conserve-stack -fno-web"
         make -j8 O=build 2>&1 | tee build/out.log
         exit ${PIPESTATUS[0]}
     displayName: "Build"
