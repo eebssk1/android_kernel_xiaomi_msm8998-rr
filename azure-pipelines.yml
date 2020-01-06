@@ -128,7 +128,7 @@ jobs:
       username: 'eebssk1'
       password: '$(apikey)'
       url: 'https://api.bintray.com/content/eebssk1/rr_kernel/kernels/'
-      remotePath: '$(Build.BuildId)/arts/'
+      remotePath: '$(Build.BuildId)/arts-$(Build.BuildId)/'
     displayName: "BintrayUpload"
     condition: succeeded()
   - task: CmdLine@2
